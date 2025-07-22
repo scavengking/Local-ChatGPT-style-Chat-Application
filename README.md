@@ -1,4 +1,5 @@
 Local ChatGPT-style Chat Application
+
 This is a full-stack chat application built for the Cointab Technical Assessment. It provides a clean, engaging, and fully functional chat experience similar to ChatGPT, powered by a locally-hosted Large Language Model (LLM) via Ollama. The application is built with a modern tech stack, focusing on clean code, clear logic, and a thoughtful user experience.
 
 Features
