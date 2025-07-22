@@ -104,9 +104,9 @@ export default function ChatArea({ activeChat, setChats }: ChatAreaProps) {
 
     } catch (error) {
       console.error("Stream processing failed:", error);
-      // Mark user message as failed
+      
       setMessages(prev => prev.map(msg => msg.id === userMessageId ? { ...msg, status: 'failed' } : msg));
-      // Remove the empty bot message container if it was created
+      
       if (botMessageId) {
         setMessages(prev => prev.filter(msg => msg.id !== botMessageId));
       }
@@ -144,7 +144,7 @@ export default function ChatArea({ activeChat, setChats }: ChatAreaProps) {
 
   // 3. New function to handle retrying a message
   const handleRetry = async (failedMessage: Message) => {
-    // Remove the failed message before retrying
+    
     setMessages(prev => prev.filter(msg => msg.id !== failedMessage.id));
     
     const newId = `user-${Date.now()}`;

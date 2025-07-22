@@ -6,15 +6,15 @@ const fetch = require('node-fetch');
 const app = express();
 const port = 3001;
 
-// A Map to store active AbortControllers for each chat session
+
 const activeStreams = new Map();
 
 app.use(cors());
 app.use(express.json());
 
-// ROUTES //
 
-// Get all chat sessions
+
+
 app.get('/api/chats', async (req, res) => {
   try {
     const allChats = await pool.query("SELECT * FROM chats ORDER BY created_at DESC");
@@ -25,7 +25,6 @@ app.get('/api/chats', async (req, res) => {
   }
 });
 
-// Create a new chat session
 app.post('/api/chat', async (req, res) => {
   try {
     const newChat = await pool.query(
@@ -38,7 +37,7 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Get all messages for a specific chat
+
 app.get('/api/chat/:chatId', async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -53,7 +52,7 @@ app.get('/api/chat/:chatId', async (req, res) => {
   }
 });
 
-// Add a new message and get a streaming response
+
 app.post('/api/chat/:chatId/message', async (req, res) => {
   const { chatId } = req.params;
   const controller = new AbortController();
@@ -72,7 +71,7 @@ app.post('/api/chat/:chatId/message', async (req, res) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gemma3:1b', // Or gemma:1b
+        model: 'gemma3:1b', 
         prompt: content,
         stream: true,
       }),
@@ -81,16 +80,16 @@ app.post('/api/chat/:chatId/message', async (req, res) => {
 
     res.setHeader('Content-Type', 'application/octet-stream');
     
-    // *** FINAL FIX: Using Node.js stream events instead of .getReader() ***
+    
     await new Promise((resolve, reject) => {
       let buffer = '';
       const decoder = new TextDecoder();
 
       ollamaResponse.body.on('data', (chunk) => {
-        // Forward the raw chunk to the client
+       
         res.write(chunk);
 
-        // Process for saving to DB
+        
         buffer += decoder.decode(chunk, { stream: true });
         const parts = buffer.split('\n');
         buffer = parts.pop() || '';
@@ -118,7 +117,7 @@ app.post('/api/chat/:chatId/message', async (req, res) => {
       });
     });
 
-    // After the stream is finished, save the complete response
+    
     if (fullBotResponse.trim()) {
       await pool.query(
         "INSERT INTO messages (chat_id, role, content) VALUES ($1, 'bot', $2)",
@@ -144,7 +143,7 @@ app.post('/api/chat/:chatId/message', async (req, res) => {
   }
 });
 
-// Update a chat's title
+
 app.patch('/api/chat/:chatId/title', async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -170,7 +169,7 @@ app.patch('/api/chat/:chatId/title', async (req, res) => {
   }
 });
 
-// New endpoint to stop a running stream
+
 app.post('/api/chat/:chatId/stop', (req, res) => {
   const { chatId } = req.params;
   const controller = activeStreams.get(chatId);
@@ -185,29 +184,28 @@ app.post('/api/chat/:chatId/stop', (req, res) => {
   }
 });
 
-// Delete a chat session and all its messages
+
 app.delete('/api/chat/:chatId', async (req, res) => {
   const { chatId } = req.params;
-  const client = await pool.connect(); // Get a client from the pool for a transaction
+  const client = await pool.connect(); 
 
   try {
-    await client.query('BEGIN'); // Start a transaction
+    await client.query('BEGIN'); 
 
-    // First, delete all messages associated with the chat
     await client.query('DELETE FROM messages WHERE chat_id = $1', [chatId]);
 
-    // Second, delete the chat itself
+   
     await client.query('DELETE FROM chats WHERE id = $1', [chatId]);
 
-    await client.query('COMMIT'); // Commit the transaction
+    await client.query('COMMIT'); 
     res.status(200).send({ message: 'Chat deleted successfully.' });
 
   } catch (err) {
-    await client.query('ROLLBACK'); // Roll back the transaction on error
+    await client.query('ROLLBACK'); 
     console.error(err.message);
     res.status(500).send("Server error");
   } finally {
-    client.release(); // Release the client back to the pool
+    client.release(); 
   }
 });
 

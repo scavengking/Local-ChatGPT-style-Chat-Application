@@ -27,7 +27,7 @@ export default function Home() {
     fetchChats();
   }, []);
 
-  // Find the active chat object from the chats array
+  
   const activeChat = chats.find(chat => chat.id === activeChatId);
 
   const handleDeleteChat = async (chatIdToDelete: number) => {
@@ -36,10 +36,10 @@ export default function Home() {
         method: 'DELETE',
       });
       
-      // Remove the deleted chat from the state
+      
       setChats(prev => prev.filter(c => c.id !== chatIdToDelete));
 
-      // If the active chat was deleted, clear the chat area
+      
       if (activeChatId === chatIdToDelete) {
         setActiveChatId(null);
       }
@@ -56,7 +56,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newTitle }),
       });
-      // Update the title in the main state
+      
       setChats(prev => prev.map(c => c.id === chatIdToRename ? { ...c, title: newTitle } : c));
     } catch (error) {
       console.error("Failed to rename chat:", error);
@@ -70,7 +70,7 @@ export default function Home() {
         setChats={setChats}
         setActiveChatId={setActiveChatId}
         handleDeleteChat={handleDeleteChat}
-        handleRenameChat={handleRenameChat} // Pass the new rename function
+        handleRenameChat={handleRenameChat} 
       />
       <ChatArea 
         activeChat={activeChat}
