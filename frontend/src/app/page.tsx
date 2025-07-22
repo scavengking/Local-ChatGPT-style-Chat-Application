@@ -1,0 +1,81 @@
+'use client';
+
+import Sidebar from "@/components/Sidebar";
+import ChatArea from "@/components/ChatArea";
+import { useState, useEffect } from "react";
+
+export interface Chat {
+  id: number;
+  title: string;
+  created_at: string;
+}
+
+export default function Home() {
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [activeChatId, setActiveChatId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/chats');
+        const data = await response.json();
+        setChats(data);
+      } catch (error) {
+        console.error("Failed to fetch chats:", error);
+      }
+    };
+    fetchChats();
+  }, []);
+
+  // Find the active chat object from the chats array
+  const activeChat = chats.find(chat => chat.id === activeChatId);
+
+  const handleDeleteChat = async (chatIdToDelete: number) => {
+    try {
+      await fetch(`http://localhost:3001/api/chat/${chatIdToDelete}`, {
+        method: 'DELETE',
+      });
+      
+      // Remove the deleted chat from the state
+      setChats(prev => prev.filter(c => c.id !== chatIdToDelete));
+
+      // If the active chat was deleted, clear the chat area
+      if (activeChatId === chatIdToDelete) {
+        setActiveChatId(null);
+      }
+
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+    }
+  };
+
+  const handleRenameChat = async (chatIdToRename: number, newTitle: string) => {
+    try {
+      await fetch(`http://localhost:3001/api/chat/${chatIdToRename}/title`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle }),
+      });
+      // Update the title in the main state
+      setChats(prev => prev.map(c => c.id === chatIdToRename ? { ...c, title: newTitle } : c));
+    } catch (error) {
+      console.error("Failed to rename chat:", error);
+    }
+  };
+
+  return (
+    <main className="flex h-screen bg-gray-900">
+      <Sidebar 
+        chats={chats}
+        setChats={setChats}
+        setActiveChatId={setActiveChatId}
+        handleDeleteChat={handleDeleteChat}
+        handleRenameChat={handleRenameChat} // Pass the new rename function
+      />
+      <ChatArea 
+        activeChat={activeChat}
+        setChats={setChats}
+      />
+    </main>
+  );
+}
