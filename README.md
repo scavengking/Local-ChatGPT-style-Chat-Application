@@ -1,10 +1,15 @@
 Local ChatGPT-style Chat Application
+
 This is a full-stack chat application built for the Cointab Technical Assessment. It provides a clean, engaging, and fully functional chat experience similar to ChatGPT, powered by a locally-hosted Large Language Model (LLM) via Ollama. The application is built with a modern tech stack, focusing on clean code, clear logic, and a thoughtful user experience.
+
+<img width="1901" height="922" alt="image" src="https://github.com/user-attachments/assets/fe2f71a6-0a9f-4031-a8d4-4c8353dbc41b" />
+
 
 Features
 This project successfully implements all mandatory requirements and a comprehensive set of bonus features, resulting in a robust and polished application.
 
 Core Features
+
 ✅ Full Chat Interface: Real-time, streaming conversations with an LLM.
 
 ✅ Persistent Storage: All chats and messages are saved to a PostgreSQL database, so conversations are never lost.
@@ -35,6 +40,7 @@ Enter: Sends the message.
 Escape: Stops an ongoing AI response generation.
 
 Tech Stack
+
 Frontend: Next.js (React Framework) with TypeScript
 
 Backend: Node.js with Express.js
@@ -50,9 +56,11 @@ Styling: Tailwind CSS
 API Client: node-fetch
 
 Setup and Installation
+
 Follow these steps to set up and run the project locally.
 
 1. Prerequisites
+
 Make sure you have the following installed on your system:
 
 Node.js (v18 or later recommended)
@@ -62,18 +70,22 @@ PostgreSQL
 Ollama
 
 2. Clone the Repository
+   
 git clone <your-github-repository-url>
 cd <repository-name>
 
-3. Ollama Setup
+4. Ollama Setup
+   
 Pull the required LLM model. Open your terminal and run the command that corresponds to the model you have installed (the backend is currently configured for gemma3:1b).
 
 # Note: Use the specific model name you have installed and configured
+
 ollama pull gemma3:1b
 
 Ensure the Ollama application is running in the background.
 
 4. Database Setup
+   
 Start your PostgreSQL service.
 
 Using a tool like psql or pgAdmin, create a new database.
@@ -83,6 +95,7 @@ CREATE DATABASE cointab_chat;
 Connect to the new database and run the schema script located at backend/db.sql to create the chats and messages tables.
 
 5. Backend Setup
+   
 Navigate to the backend directory:
 
 cd backend
@@ -94,6 +107,7 @@ npm install
 Configure your database connection by editing the backend/db.js file with your PostgreSQL username and password.
 
 6. Frontend Setup
+   
 From the root directory, navigate to the frontend:
 
 cd frontend
@@ -103,9 +117,11 @@ Install all required dependencies:
 npm install
 
 Running the Application
+
 You will need two separate terminals to run the backend and frontend servers concurrently.
 
 Start the Backend Server:
+
 In the backend directory, run:
 
 node index.js
@@ -113,6 +129,7 @@ node index.js
 The server will start and listen on http://localhost:3001.
 
 Start the Frontend Server:
+
 In the frontend directory, run:
 
 npm run dev
@@ -122,57 +139,16 @@ The application will be available at http://localhost:3000.
 Open your web browser and navigate to http://localhost:3000 to use the app.
 
 API Endpoints
+
 The backend exposes the following RESTful API endpoints:
 
-Method
+<img width="960" height="525" alt="image" src="https://github.com/user-attachments/assets/571f1294-19b3-476f-be09-69a43f28b9a1" />
 
-Endpoint
 
-Description
 
-GET
-
-/api/chats
-
-Retrieves a list of all chat sessions.
-
-POST
-
-/api/chat
-
-Creates a new, empty chat session.
-
-GET
-
-/api/chat/:chatId
-
-Retrieves all messages for a specific chat.
-
-POST
-
-/api/chat/:chatId/message
-
-Sends a message and streams the AI response.
-
-POST
-
-/api/chat/:chatId/stop
-
-Stops an in-progress AI response stream.
-
-PATCH
-
-/api/chat/:chatId/title
-
-Updates the title of a specific chat.
-
-DELETE
-
-/api/chat/:chatId
-
-Deletes a chat and all of its associated messages.
 
 Assumptions & Constraints
+
 The application is designed for local development and demonstration, not for a production environment.
 
 Active chat streams are tracked in-memory on the backend, which is not suitable for a scaled, multi-instance deployment.
