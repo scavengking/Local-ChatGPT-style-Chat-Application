@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import ChatArea from "@/components/ChatArea";
 import { useState, useEffect } from "react";
 
+
 export interface Chat {
   id: number;
   title: string;
@@ -11,9 +12,12 @@ export interface Chat {
 }
 
 export default function Home() {
+  
   const [chats, setChats] = useState<Chat[]>([]);
+  
   const [activeChatId, setActiveChatId] = useState<number | null>(null);
 
+  
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -25,30 +29,47 @@ export default function Home() {
       }
     };
     fetchChats();
-  }, []);
+  }, []); 
 
   
   const activeChat = chats.find(chat => chat.id === activeChatId);
 
+  
+  const handleNewChat = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/chat', {
+        method: 'POST',
+      });
+      const newChat = await response.json();
+      
+      setChats(prevChats => [newChat, ...prevChats]);
+      
+      setActiveChatId(newChat.id);
+    } catch (error) {
+      console.error("Failed to create new chat:", error);
+    }
+  };
+
+  
   const handleDeleteChat = async (chatIdToDelete: number) => {
     try {
       await fetch(`http://localhost:3001/api/chat/${chatIdToDelete}`, {
         method: 'DELETE',
       });
       
-      
+    
       setChats(prev => prev.filter(c => c.id !== chatIdToDelete));
 
       
       if (activeChatId === chatIdToDelete) {
         setActiveChatId(null);
       }
-
     } catch (error) {
       console.error("Failed to delete chat:", error);
     }
   };
 
+ 
   const handleRenameChat = async (chatIdToRename: number, newTitle: string) => {
     try {
       await fetch(`http://localhost:3001/api/chat/${chatIdToRename}/title`, {
@@ -67,10 +88,10 @@ export default function Home() {
     <main className="flex h-screen bg-gray-900">
       <Sidebar 
         chats={chats}
-        setChats={setChats}
         setActiveChatId={setActiveChatId}
         handleDeleteChat={handleDeleteChat}
-        handleRenameChat={handleRenameChat} 
+        handleRenameChat={handleRenameChat}
+        handleNewChat={handleNewChat} 
       />
       <ChatArea 
         activeChat={activeChat}
